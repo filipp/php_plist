@@ -12,12 +12,20 @@
 class PropertyList
 {
   function __construct($xmlFile) {
-    if (!file_exists($xmlFile)) {
-      echo "{$xmlFile}: no such file";
+    $loaded = false;
+    $document = new DOMDocument();
+
+    if (file_exists($xmlFile)) {
+      $loaded = $document->load($xmlFile);
+    } else {
+      $loaded = $document->loadXML($xmlFile);
+    }
+
+    if ($loaded === false) {
+      echo "Failed to load input: {$xmlFile}";
       return false;
     }
-    $document = new DOMDocument();
-    $document->load($xmlFile);
+    
     $plistNode = $document->documentElement;
     $this->root = $plistNode->firstChild;
     while ($this->root->nodeName == "#text") {
